@@ -1,27 +1,47 @@
-## Iteration 5 — Professional floor plan visuals
+## Iteration 6 — Instant booking with real-time canvas status
 
-Redesign the canvas and all element icons to look like a high-end enterprise office planning tool (think Archibus, Officespace, or a clean architectural floor plan). The app will be presented on stage at a conference and must look polished and professional.
+### 1. Migrate the bookings table
 
-### Canvas
-Give the canvas a warm neutral background (beige/off-white). Grid lines should be subtle and unobtrusive.
+Create a new Supabase migration that replaces the current `booking_date` + `time_slot` columns with `start_time` and `end_time` (both `timestamptz`). The new schema:
 
-### Element icons — pure SVG, no emoji
-Replace all emoji icons with proper inline SVG illustrations drawn from a top-down (bird's-eye) perspective. Use clean architectural line art style — simple shapes, thin strokes, minimal fills. Every element should be immediately recognizable at a glance.
+```sql
+ALTER TABLE bookings
+  DROP COLUMN booking_date,
+  DROP COLUMN time_slot,
+  ADD COLUMN start_time timestamptz NOT NULL DEFAULT now(),
+  ADD COLUMN end_time timestamptz NOT NULL DEFAULT now();
+```
 
-Important distinctions:
-- `pult-skjerm`: a desk with a clearly visible external monitor (screen + stand visible from above)
-- `pult-laptop`: a plain empty desk — NO laptop, NO device. Just the desk surface and chair.
-- Meeting rooms: should show a table with chairs arranged around it, and a thin rectangle on one wall representing a display/screen.
-- Decorative elements (plant, kitchen, toilet, printer): intuitive top-down drawings — use your best judgment to make them recognizable.
+Update `src/integrations/supabase/types.ts` to reflect the new schema.
 
-### Element palette (left sidebar)
-Each palette item should show:
-1. A small rendered preview of the actual SVG icon
-2. The element name as a label
+### 2. Instant booking dialog
 
-The palette should look professional — clean cards, subtle hover/selected states, category groupings with headers ("Arbeidsplasser", "Møterom", "Dekor").
+When a user clicks a bookable element in booking mode, show a dialog with:
 
-### Overall aesthetic
-Warm neutral tones, clean typography, generous whitespace. Enterprise-grade — not a toy app.
+- **Name field**: text input ("Ditt navn")
+- **Duration selector**: radio buttons or segmented control with these options:
+  - 30 minutter
+  - 1 time
+  - 1,5 timer
+  - 2 timer
+  - 3 timer
+  - Resten av dagen (until 17:00 today)
+- **Book-knapp**: sets `start_time = now()`, `end_time = now() + chosen duration`
+- Do not allow booking if the element already has an active booking (`start_time <= now <= end_time`)
+- Show a clear error/warning if the element is currently occupied
 
-All UI text remains in Norwegian.
+### 3. Canvas status indicators
+
+Query all bookings for the current zone where `end_time > now()`. For each element on canvas:
+
+- 🟢 **Ledig**: no active booking — default appearance
+- 🔴 **Opptatt nå**: `start_time <= now() <= end_time` — show red overlay + tooltip: "Booket av [navn] — til kl. HH:MM"
+
+Elements are automatically considered free once `end_time` has passed (no background job needed — just re-query on load and after each booking).
+
+### 4. Keep existing features intact
+- Admin/edit mode is unaffected
+- Floor plan save/load is unaffected
+- Location selector is unaffected
+
+All UI text in Norwegian.
