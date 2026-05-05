@@ -1,45 +1,120 @@
-## Iteration 5 — Enterprise-quality top-down SVG icons
+## Iteration 5 — Redraw all floor plan elements as proper top-down SVG illustrations
 
-Replace all emoji icons with professional inline SVG icons drawn from a top-down (plan view) perspective, as used in enterprise office planning tools like Archibus or Officespace.
+Replace all emojis and icon-based rendering with hand-drawn-style inline SVG components. The result should look like a professional architectural floor plan tool.
 
-### Style guidelines
-- Clean line art, minimal fills, consistent 2px stroke
-- Colors should match the existing element color scheme (blues for desks, greens for meeting rooms, etc.)
-- All icons must look good at small sizes (the canvas cell is 60px wide)
-- Top-down / bird's-eye view — not isometric, not perspective
+---
 
-### Icons to create (one per element type)
+### Canvas background
+Change the canvas background color from the current dark/neutral to a warm beige: `#f0ebe0`.
+Grid lines should be a subtle warm gray: `rgba(180,160,130,0.35)`.
 
-**Workspaces (top-down plan view):**
-- `pult-skjerm`: Rectangular desk with a monitor outline (thin rectangle) and small keyboard bar at front edge
-- `pult-laptop`: Rectangular desk with a small open laptop outline (thin trapezoid)
-- `stapult`: Taller rectangular desk outline (slightly narrower, no monitor)
-- `lounge`: Soft curved sofa shape (arc or rounded rectangle) with a small round table
+---
 
-**Meeting rooms:**
-- `mote-lite`: Rectangular table with 4 small chair rectangles around it
-- `mote-medium`: Oval/rectangular table with 6-8 chair rectangles around it
-- `mote-stort`: Large rectangular table with 10+ chairs around it
-- `telefonbod`: Small square with a phone handset outline inside
+### Element color palette
+Every element has a background rectangle (the "footprint") using these fills:
+- Workspaces (desks, lounge): background `#c8b89a`, interior lines `#5a4a3a`
+- Meeting rooms: background `#b8c9b0`, interior lines `#3a5a40`
+- Decor (plant, kitchen, toilet, printer, wall): each has its own palette (see below)
 
-**Decor / infrastructure:**
-- `vegg`: Solid filled rectangle (represents a wall segment)
-- `plante`: Circle with simple leaf/petal shapes inside
-- `kjokken`: Counter L-shape or rectangle with a sink circle and a small coffee machine rectangle
-- `printer`: Rectangular box outline with a small paper sheet coming out the top
-- `toalett`: Two toilet bowl outlines side by side (or one centered), with a small sink rectangle
+All background rectangles should have rounded corners (rx="4") and fill the cell area with 3px inset padding.
 
-### Implementation
+---
 
-Create a new component `src/components/ElementIcon.tsx` that exports:
+### Create component: `src/components/ElementIcon.tsx`
+
+Export a single component:
 ```tsx
-export function ElementIcon({ typeId, width, height }: { typeId: string; width: number; height: number }) {
-  // Returns an inline SVG for each typeId, scaled to width/height
-}
+export function ElementIcon({ typeId, widthPx, heightPx }: { typeId: string; widthPx: number; heightPx: number })
+```
+It renders an SVG with `width={widthPx}` `height={heightPx}` `viewBox={`0 0 ${widthPx} ${heightPx}`}`.
+
+Implement one case per typeId. Use pure SVG shapes — NO emoji, NO text, NO foreign objects.
+
+---
+
+### Drawing instructions per element type
+
+#### `pult-skjerm` — Desk with external monitor (2×1 = 120×60px)
+- Background rect: fill `#c8b89a`, rx=4, inset 3px
+- Desk surface: rect centered horizontally, upper 60% of height, fill `#d4c4a8`, stroke `#5a4a3a` strokeWidth=1.5
+- External monitor arc: a curved SVG arc path at the top edge of the desk, representing an ultrawide curved monitor seen from above. Draw as a single arc path with no fill, stroke `#2a2a2a` strokeWidth=2. Example: `M 30,16 Q 60,10 90,16` (adjust to fit)
+- Chair: rounded rect below desk, centered, ~28×14px, fill `#9e8e78`, rx=5
+
+#### `pult-laptop` — Desk with laptop (2×1 = 120×60px)
+- Same background and desk surface as pult-skjerm
+- Instead of monitor arc: a small open-laptop shape on the desk. Draw as two thin rects meeting at a slight angle (base + screen lid), fill `#3a3a3a` for screen, `#5a5a5a` for base
+- Chair: same as pult-skjerm
+
+#### `stapult` — Standing desk (2×1 = 120×60px)
+- Background rect: fill `#c8b89a`, rx=4
+- Desk surface: slightly wider rect, upper 55%, fill `#d4c4a8`, stroke `#5a4a3a`
+- No monitor, no chair (standing desk)
+- Add two thin vertical lines on desk surface suggesting a dual-monitor stand or height-adjust column
+
+#### `lounge` — Lounge area (3×2 = 180×120px)
+- Background: fill `#c8b89a`, rx=4
+- Sofa: thick L-shaped or arc path at the bottom/left edges, fill `#a89878`, stroke `#5a4a3a` strokeWidth=1.5
+- Small round coffee table: circle, fill `#b8a888`, stroke `#5a4a3a`, centered/slightly offset
+- Optional: 1-2 small chair shapes (rounded rects) on open sides
+
+#### `mote-lite` — Small meeting room 2-4 pax (3×3 = 180×180px)
+- Background: fill `#b8c9b0`, rx=4
+- Conference table: rounded rect, centered, ~100×50px, fill `#c8d8c0`, stroke `#3a5a40`
+- Chairs: 2 small rounded rects above table + 2 below, fill `#7a9a7a`, rx=3
+- Display/TV: thin rect (stroke only, no fill) on the top inner wall, ~60×6px — represents a wall-mounted screen
+
+#### `mote-medium` — Medium meeting room 4-8 pax (4×3 = 240×180px)
+- Same pattern as mote-lite but larger table (~140×60px)
+- 3 chairs above + 3 chairs below + 1 on each short side
+- TV line on top wall: ~90×6px
+
+#### `mote-stort` — Large meeting room 8-16 pax (6×4 = 360×240px)
+- Large oval or rect table centered (~200×90px), fill `#c8d8c0`, stroke `#3a5a40`
+- 5 chairs along each long side + 2 on each short side
+- TV line on top wall: ~140×6px
+
+#### `telefonbod` — Phone booth (1×1 = 60×60px)
+- Background: fill `#b8c9b0`, rx=4
+- Simple phone handset shape (two circles connected by a curved line), stroke `#3a5a40`, no fill
+- Or: a single person silhouette (head circle + slight shoulder arc) seen from above
+
+#### `vegg` — Wall segment (1×1 = 60×60px)
+- Solid filled rect: fill `#8a8070`, rx=2, full size minus 2px
+- No internal drawing — walls are solid
+
+#### `plante` — Plant (1×1 = 60×60px)
+- Background: fill `#c8d8a0`, rx=30 (circular)
+- Draw 4–6 leaf shapes radiating from center: elongated ellipses, fill `#5a8a3a`, stroke `#3a5a20`
+- Small circle in center: fill `#8a6a40` (pot)
+
+#### `kjokken` — Kitchen (4×2 = 240×120px)
+- Background: fill `#e8dcc8`, rx=4
+- Counter along top and one side: L-shaped rect, fill `#c8b890`, stroke `#7a6a50`
+- Sink: circle cutout (white circle) on counter top section
+- Coffee machine: small rect with a circle on top (mug), fill `#5a5a5a`, on counter
+- Fridge: rect on one end, fill `#d0d0d0`, stroke `#9a9a9a`
+
+#### `printer` — Printer (1×1 = 60×60px)
+- Background: fill `#d8d8d0`, rx=4
+- Printer body: rect ~40×30, fill `#c0c0b8`, stroke `#7a7a70`
+- Paper sheet: thin white rect slightly protruding from top of printer body
+
+#### `toalett` — Toilet/WC (2×2 = 120×120px)
+- Background: fill `#dce8f0`, rx=4
+- Draw 2 toilet bowls side by side: each is a rounded-bottom D-shape with a seat ring (two concentric D-paths), fill `#ffffff`, stroke `#5a7a8a`
+- Small sink rect at top center: fill `#e8f0f8`, stroke `#5a7a8a`, with a circle drain
+
+---
+
+### Update FloorPlanCanvas.tsx
+Replace `<span className="text-lg leading-none">{t.icon}</span>` with:
+```tsx
+<ElementIcon typeId={el.type} widthPx={w * CELL - 4} heightPx={h * CELL - 4} />
 ```
 
-Update `FloorPlanCanvas.tsx` to render `<ElementIcon>` instead of `<span>{t.icon}</span>`.
+Remove the separate label text span for element name — the icon should be self-explanatory.
+Keep the booking status overlay (red tint when booked) as a semi-transparent div on top.
 
-Keep the `icon` field in `elements.ts` as a fallback (do not remove it).
+---
 
 All UI text remains in Norwegian.
