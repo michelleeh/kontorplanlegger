@@ -1,0 +1,26 @@
+{
+  "buildings": [
+    { "id": "bygg-a", "name": "Bygg A" },
+    { "id": "bygg-b", "name": "Bygg B" },
+    { "id": "bygg-c", "name": "Bygg C" }
+  ],
+  "floors": [
+    { "id": "a1", "buildingId": "bygg-a", "name": "1. etasje" },
+    { "id": "a2", "buildingId": "bygg-a", "name": "2. etasje" },
+    { "id": "a3", "buildingId": "bygg-a", "name": "3. etasje" },
+    { "id": "b1", "buildingId": "bygg-b", "name": "1. etasje" },
+    { "id": "b2", "buildingId": "bygg-b", "name": "2. etasje" },
+    { "id": "c1", "buildingId": "bygg-c", "name": "1. etasje" }
+  ],
+  "zones": [
+    { "id": "a1-nord",   "floorId": "a1", "name": "Nord",          "soneType": "aktiv" },
+    { "id": "a1-sor",    "floorId": "a1", "name": "S\u00f8r",          "soneType": "stille" },
+    { "id": "a2-open",   "floorId": "a2", "name": "\u00c5pen plan",     "soneType": "fokus" },
+    { "id": "a2-stille", "floorId": "a2", "name": "Stillerom",     "soneType": "stille" },
+    { "id": "a3-sosial", "floorId": "a3", "name": "Sosial sone",   "soneType": "sosial" },
+    { "id": "b1-nord",   "floorId": "b1", "name": "Nord",          "soneType": "aktiv" },
+    { "id": "b1-sor",    "floorId": "b1", "name": "S\u00f8r",          "soneType": "fokus" },
+    { "id": "b2-open",   "floorId": "b2", "name": "\u00c5pen plan",     "soneType": "aktiv" },
+    { "id": "c1-plan",   "floorId": "c1", "name": "Hele etasjen",  "soneType": "sosial" }
+  ]
+}
