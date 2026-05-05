@@ -1,39 +1,27 @@
-## Iteration 5 (continued) — Visual refinements + professional element palette
+## Iteration 5 — Professional floor plan visuals
 
-### Fix 1: `pult-laptop` — rename concept and redraw
+Redesign the canvas and all element icons to look like a high-end enterprise office planning tool (think Archibus, Officespace, or a clean architectural floor plan). The app will be presented on stage at a conference and must look polished and professional.
 
-The element `pult-laptop` means "desk WITHOUT an external monitor" (a plain desk). It should NOT show a laptop shape — that is misleading. Redraw it as:
-- Background rect: fill `#c8b89a`, rx=4
-- Desk surface: rect in upper 55% of height, fill `#d4c4a8`, stroke `#5a4a3a` strokeWidth=1.5
-- NO device on the desk — the surface is empty
-- Chair: rounded rect below desk, centered, fill `#9e8e78`, rx=5
+### Canvas
+Give the canvas a warm neutral background (beige/off-white). Grid lines should be subtle and unobtrusive.
 
-### Fix 2: `pult-skjerm` — make the monitor clearly recognizable
+### Element icons — pure SVG, no emoji
+Replace all emoji icons with proper inline SVG illustrations drawn from a top-down (bird's-eye) perspective. Use clean architectural line art style — simple shapes, thin strokes, minimal fills. Every element should be immediately recognizable at a glance.
 
-Replace the arc with a proper top-down monitor representation:
-- Background rect: fill `#c8b89a`, rx=4
-- Desk surface: rect in upper 55% of height, fill `#d4c4a8`, stroke `#5a4a3a`
-- Monitor: drawn as two shapes at the top edge of the desk:
-  1. A wide thin rectangle (the screen panel): ~70px wide × 7px tall, fill `#2a2a2a`, positioned centered at top of desk surface
-  2. A small square below it (the stand base): ~14px × 5px, fill `#3a3a3a`, centered
-- Chair: rounded rect below desk, centered, fill `#9e8e78`, rx=5
+Important distinctions:
+- `pult-skjerm`: a desk with a clearly visible external monitor (screen + stand visible from above)
+- `pult-laptop`: a plain empty desk — NO laptop, NO device. Just the desk surface and chair.
+- Meeting rooms: should show a table with chairs arranged around it, and a thin rectangle on one wall representing a display/screen.
+- Decorative elements (plant, kitchen, toilet, printer): intuitive top-down drawings — use your best judgment to make them recognizable.
 
-### Fix 3: Element palette — show actual SVG previews with labels
+### Element palette (left sidebar)
+Each palette item should show:
+1. A small rendered preview of the actual SVG icon
+2. The element name as a label
 
-Redesign `src/components/ElementPalette.tsx` so each item shows:
-1. A rendered `<ElementIcon>` preview at ~48×32px (or proportional to element's w/h ratio, max 64px on longest side)
-2. The element name as a text label below the icon (e.g. "Pult m/skjerm", "Møterom 2–4")
-3. Layout: a clean grid of cards (2 columns), each card is a bordered rounded rectangle
-4. Selected state: card gets a blue/indigo border and subtle background highlight
-5. Category headers: "Arbeidsplasser", "Møterom", "Dekor" as small uppercase labels separating the groups
+The palette should look professional — clean cards, subtle hover/selected states, category groupings with headers ("Arbeidsplasser", "Møterom", "Dekor").
 
-The palette should look professional and enterprise-grade — think Figma's component panel or Archibus element picker. Clean spacing, neutral colors, crisp typography.
-
-### General enterprise polish
-- Use a consistent warm neutral color palette throughout: no bright saturated colors in the UI chrome
-- Sidebar background: `#f8f5f0` (slightly warmer than white)
-- Card borders: `#e0d8cc`
-- Selected element highlight: indigo `#4f46e5` border, `#eef2ff` background
-- Typography: semibold for labels, muted color for secondary text
+### Overall aesthetic
+Warm neutral tones, clean typography, generous whitespace. Enterprise-grade — not a toy app.
 
 All UI text remains in Norwegian.
