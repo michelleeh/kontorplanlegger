@@ -33,6 +33,83 @@
 
   <div class="iteration">
     <div class="iteration-header">
+      <span class="badge">Iterasjon 4</span>
+      <span class="status-done">Lukket</span>
+      <h2>Dra og slipp elementer i redigeringsmodus</h2>
+    </div>
+    <div class="stitle">Hva ble bygget</div>
+    <ul>
+      <li><strong>Drag-to-move</strong>: Eksisterende elementer kan nå flyttes ved å dra dem til ny posisjon på canvaset i admin-modus.</li>
+      <li><strong>Grid-snapping</strong>: Elementet snapper til 60px-grid under drag for presis plassering.</li>
+      <li><strong>Visuell feedback</strong>: Grønn markering der elementet kan landes, rød hvis posisjonen er opptatt.</li>
+      <li><strong>Kollisjonskontroll</strong>: Drag avbrytes og elementet beholder original posisjon ved overlapp.</li>
+      <li><strong>AGENTS.md</strong>: Lagt til persistent kontekst-fil i Lovable-repoet – Lovable leser den automatisk i alle samtaler.</li>
+    </ul>
+    <hr/>
+    <div class="stitle">Hva fungerte bra</div>
+    <div class="tags">
+      <span class="tag good">Pointer events gir jevn drag-opplevelse</span>
+      <span class="tag good">AGENTS.md gjør Lovable-prompts kortere og mer presis</span>
+    </div>
+    <hr/>
+    <div class="stitle">Lærdommer</div>
+    <div class="tags">
+      <span class="tag learn">Lovable-prompts bør skrives på engelsk for best resultat</span>
+      <span class="tag learn">AGENTS.md leses alltid av Lovable – bedre enn Knowledge-UI for tekniske brukere</span>
+    </div>
+    <hr/>
+    <div class="stitle">Neste steg (Iterasjon 5)</div>
+    <div class="tags">
+      <span class="tag next">Enterprise-kvalitet SVG-ikoner (top-down perspektiv)</span>
+    </div>
+  </div>
+
+  <div class="iteration">
+    <div class="iteration-header">
+      <span class="badge">Iterasjon 3</span>
+      <span class="status-done">Lukket</span>
+      <h2>Supabase-migrering + booking-funksjonalitet</h2>
+    </div>
+    <div class="stitle">Hva ble bygget</div>
+    <ul>
+      <li><strong>Lovable Cloud / Supabase</strong>: Aktivert Lovable Cloud som gir innebygd Supabase (database, auth, fillagring).</li>
+      <li><strong>Databasetabeller</strong>: <code>floor_plans</code> (zone_id, grid_w, grid_h, cells jsonb) og <code>bookings</code> (id, zone_id, element_id, user_name, booking_date, time_slot).</li>
+      <li><strong>Planløsning-lagring</strong>: Alle planløsninger lagres nå persistent i Supabase i stedet for Railway JSON-filer.</li>
+      <li><strong>BookingDialog</strong>: Ansatte kan booke plass med navn, dato og tidsluke (formiddag/ettermiddag/hel dag).</li>
+      <li><strong>Canvas-status</strong>: Bookede elementer vises i rødt/oransje med tooltip som viser hvem som har booket.</li>
+      <li><strong>Railway</strong>: Brukes nå kun til statisk konfig (bygg/etasjer/soner) via <code>/api/config</code>.</li>
+    </ul>
+    <hr/>
+    <div class="stitle">Arkitektur</div>
+    <div class="arch">
+Lovable (frontend)  →  https://[prosjekt].lovable.app
+        ↓ direkte kall
+Supabase            →  floor_plans + bookings (persistent)
+        ↓ config
+Railway (backend)   →  https://kontorplanlegger-production.up.railway.app/api/config
+    </div>
+    <hr/>
+    <div class="stitle">Hva fungerte bra</div>
+    <div class="tags">
+      <span class="tag good">Lovable genererte komplett Supabase-integrasjon fra én prompt</span>
+      <span class="tag good">Migrasjoner i supabase/migrations/ holdes i git</span>
+      <span class="tag good">Persistent lagring – planløsninger overlever Railway-redeploy</span>
+    </div>
+    <hr/>
+    <div class="stitle">Lærdommer</div>
+    <div class="tags">
+      <span class="tag learn">Lovable Cloud = Supabase – aktiveres med én knapp i Lovable-UI</span>
+      <span class="tag learn">Ingen offentlig API for å sende prompts til Lovable – LOVABLE_PROMPT.txt + GitHub raw URL er workaround</span>
+    </div>
+    <hr/>
+    <div class="stitle">Neste steg (Iterasjon 4)</div>
+    <div class="tags">
+      <span class="tag next">Dra og flytt elementer i redigeringsmodus</span>
+    </div>
+  </div>
+
+  <div class="iteration">
+    <div class="iteration-header">
       <span class="badge">Iterasjon 2</span>
       <span class="status-done">Lukket</span>
       <h2>Sky-oppsett + Lovable-frontend + multi-celle SVG-ikoner</h2>

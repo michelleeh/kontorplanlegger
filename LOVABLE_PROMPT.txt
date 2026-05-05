@@ -1,28 +1,45 @@
-## Iteration 4 — Move elements in edit mode
+## Iteration 5 — Enterprise-quality top-down SVG icons
 
-In admin mode, users should be able to move existing elements by dragging them to a new position on the canvas.
+Replace all emoji icons with professional inline SVG icons drawn from a top-down (plan view) perspective, as used in enterprise office planning tools like Archibus or Officespace.
 
-### Desired behavior
+### Style guidelines
+- Clean line art, minimal fills, consistent 2px stroke
+- Colors should match the existing element color scheme (blues for desks, greens for meeting rooms, etc.)
+- All icons must look good at small sizes (the canvas cell is 60px wide)
+- Top-down / bird's-eye view — not isometric, not perspective
 
-1. In admin mode: when the user clicks and holds an existing element, it should be draggable across the canvas.
-2. While dragging: show the element semi-transparent (opacity ~0.6) snapped to the 60px grid at the new position.
-3. Show a green highlight where the element will land if the position is free, and a red highlight if the position is occupied.
-4. On drop: move the element to the new grid position if it is free. Cancel the drag and keep the original position if occupied.
-5. Collision detection: ensure no part of the dragged element overlaps any other element.
-6. Dragging an element must NOT trigger placement of a new element (do not call onCellClick).
+### Icons to create (one per element type)
 
-### Technical implementation
+**Workspaces (top-down plan view):**
+- `pult-skjerm`: Rectangular desk with a monitor outline (thin rectangle) and small keyboard bar at front edge
+- `pult-laptop`: Rectangular desk with a small open laptop outline (thin trapezoid)
+- `stapult`: Taller rectangular desk outline (slightly narrower, no monitor)
+- `lounge`: Soft curved sofa shape (arc or rounded rectangle) with a small round table
 
-- Add `onMoveElement: (id: string, newX: number, newY: number) => void` prop to FloorPlanCanvas.
-- Use pointer events (onPointerDown/onPointerMove/onPointerUp) for drag — do not use the HTML5 drag API.
-- CELL = 60px. Snap to grid: `Math.floor(pixelOffset / CELL)`.
-- In Index.tsx: add a `moveElement` function that updates the element's x/y, and pass it as the `onMoveElement` prop.
+**Meeting rooms:**
+- `mote-lite`: Rectangular table with 4 small chair rectangles around it
+- `mote-medium`: Oval/rectangular table with 6-8 chair rectangles around it
+- `mote-stort`: Large rectangular table with 10+ chairs around it
+- `telefonbod`: Small square with a phone handset outline inside
 
-### Existing functionality that must NOT change
-- Clicking an empty cell places a new element (onCellClick works as before)
-- Clicking an existing element selects it (onElementClick works as before)
-- Delete button in the sidebar panel
-- Resize inputs in the sidebar panel
-- Booking mode is unaffected
+**Decor / infrastructure:**
+- `vegg`: Solid filled rectangle (represents a wall segment)
+- `plante`: Circle with simple leaf/petal shapes inside
+- `kjokken`: Counter L-shape or rectangle with a sink circle and a small coffee machine rectangle
+- `printer`: Rectangular box outline with a small paper sheet coming out the top
+- `toalett`: Two toilet bowl outlines side by side (or one centered), with a small sink rectangle
+
+### Implementation
+
+Create a new component `src/components/ElementIcon.tsx` that exports:
+```tsx
+export function ElementIcon({ typeId, width, height }: { typeId: string; width: number; height: number }) {
+  // Returns an inline SVG for each typeId, scaled to width/height
+}
+```
+
+Update `FloorPlanCanvas.tsx` to render `<ElementIcon>` instead of `<span>{t.icon}</span>`.
+
+Keep the `icon` field in `elements.ts` as a fallback (do not remove it).
 
 All UI text remains in Norwegian.
