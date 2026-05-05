@@ -1,0 +1,41 @@
+Migrate data storage from the Railway REST API to Supabase (Lovable Cloud).
+
+Create these two Supabase tables:
+
+1. floor_plans
+   - zone_id: text (primary key)
+   - grid_w: integer (default 20)
+   - grid_h: integer (default 15)
+   - cells: jsonb (default [])
+   - updated_at: timestamptz (default now())
+
+2. bookings
+   - id: uuid (primary key, default gen_random_uuid())
+   - zone_id: text
+   - element_id: text
+   - element_type: text
+   - user_name: text
+   - booking_date: date
+   - time_slot: text ('formiddag' | 'ettermiddag' | 'hel_dag')
+   - created_at: timestamptz (default now())
+
+Then update the app:
+
+1. Replace all floor plan fetch/PUT calls to Railway with Supabase queries:
+   - Load: SELECT from floor_plans WHERE zone_id = ?
+   - Save: UPSERT into floor_plans
+
+2. Keep fetching config (buildings/floors/zones) from Railway:
+   https://kontorplanlegger-production.up.railway.app/api/config
+
+3. Implement the BookingDialog so it actually saves to the bookings table:
+   - Fields: name (text input), date (date picker), time slot (formiddag / ettermiddag / hel dag)
+   - On submit: INSERT into bookings
+   - Show success toast on save
+
+4. In booking mode, show which elements are booked today:
+   - Query bookings WHERE booking_date = today AND zone_id = current zone
+   - Highlight booked elements in red/orange on the canvas
+   - Show tooltip: "Booket av [navn] – [tidsluke]"
+
+Norwegian language throughout.
