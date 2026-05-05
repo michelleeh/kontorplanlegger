@@ -46,12 +46,6 @@ app.get('/api/bookings', (_req, res) => {
   res.json(readJSON('bookings.json'));
 });
 
-if (process.env.NODE_ENV !== 'development') {
-  app.use(express.static(join(__dirname, 'dist')));
-  app.get('/{*path}', (_req, res) => {
-    res.sendFile(join(__dirname, 'dist', 'index.html'));
-  });
-}
 
 app.listen(PORT, () => {
   console.log(`Kontorplanlegger server running on http://localhost:${PORT}`);
