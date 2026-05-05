@@ -1,41 +1,28 @@
-Migrate data storage from the Railway REST API to Supabase (Lovable Cloud).
+## Iterasjon 4 — Flytte elementer i redigeringsmodus
 
-Create these two Supabase tables:
+I admin-modus skal det nå være mulig å flytte eksisterende elementer ved å dra dem til en ny posisjon på canvaset.
 
-1. floor_plans
-   - zone_id: text (primary key)
-   - grid_w: integer (default 20)
-   - grid_h: integer (default 15)
-   - cells: jsonb (default [])
-   - updated_at: timestamptz (default now())
+### Ønsket oppførsel
 
-2. bookings
-   - id: uuid (primary key, default gen_random_uuid())
-   - zone_id: text
-   - element_id: text
-   - element_type: text
-   - user_name: text
-   - booking_date: date
-   - time_slot: text ('formiddag' | 'ettermiddag' | 'hel_dag')
-   - created_at: timestamptz (default now())
+1. I admin-modus: når brukeren trykker og holder på et eksisterende element, skal det kunne dras rundt på canvaset.
+2. Under drag: vis elementet halvgjennomsiktig (opacity ~0.6) på den nye posisjonen (snappet til 60px-grid) mens det dras.
+3. Vis en grønn markering der elementet vil landes hvis posisjonen er ledig, og rød markering hvis posisjonen er opptatt.
+4. Ved slipp: flytt elementet til den nye gridposisjonen hvis den er ledig. Avbryt drag og behold original posisjon hvis opptatt.
+5. Kollisjonskontroll: sjekk at ingen del av elementet overlapper andre elementer.
+6. Et element som dras skal IKKE trigge plassering av nytt element (ikke kall onCellClick).
 
-Then update the app:
+### Teknisk implementasjon
 
-1. Replace all floor plan fetch/PUT calls to Railway with Supabase queries:
-   - Load: SELECT from floor_plans WHERE zone_id = ?
-   - Save: UPSERT into floor_plans
+- Legg til `onMoveElement: (id: string, newX: number, newY: number) => void` prop til FloorPlanCanvas.
+- Bruk pointer events (onPointerDown/onPointerMove/onPointerUp) for drag — ikke HTML5 drag API.
+- CELL = 60px. Snap til grid: `Math.floor(pixelOffset / CELL)`.
+- I Index.tsx: legg til `moveElement` funksjon som oppdaterer cellen med ny x/y, og send den som `onMoveElement` prop.
 
-2. Keep fetching config (buildings/floors/zones) from Railway:
-   https://kontorplanlegger-production.up.railway.app/api/config
+### Eksisterende funksjonalitet som IKKE skal endres
+- Klikk på tom celle plasserer nytt element (onCellClick fungerer som før)
+- Klikk på eksisterende element selekterer det (onElementClick fungerer som før)
+- Slett-knapp i sidepanelet
+- Resize-inputs i sidepanelet
+- Booking-modus er upåvirket
 
-3. Implement the BookingDialog so it actually saves to the bookings table:
-   - Fields: name (text input), date (date picker), time slot (formiddag / ettermiddag / hel dag)
-   - On submit: INSERT into bookings
-   - Show success toast on save
-
-4. In booking mode, show which elements are booked today:
-   - Query bookings WHERE booking_date = today AND zone_id = current zone
-   - Highlight booked elements in red/orange on the canvas
-   - Show tooltip: "Booket av [navn] – [tidsluke]"
-
-Norwegian language throughout.
+Norsk språk i all UI-tekst.
